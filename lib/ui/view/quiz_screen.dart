@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quiz_app/core/constant/measurement_constant.dart';
+import 'package:quiz_app/core/enum/question_type.dart';
 import 'package:quiz_app/core/enum/view_state.dart';
 import 'package:quiz_app/core/model/question_info.dart';
 import 'package:quiz_app/core/service/locator/locator.dart';
@@ -11,7 +12,10 @@ import 'package:quiz_app/ui/shared/style/roboto_style.dart';
 import 'package:quiz_app/ui/shared/style/ubuntu_style.dart';
 import 'package:quiz_app/ui/shared/theme_color.dart';
 import 'package:quiz_app/ui/view/base_view.dart';
+import 'package:quiz_app/ui/widget/checkbox_answer.dart';
+import 'package:quiz_app/ui/widget/radio_answer.dart';
 import 'package:quiz_app/ui/widget/rounded_button.dart';
+import 'package:quiz_app/ui/widget/underline_textfield.dart';
 
 class QuizScreen extends StatelessWidget {
   final NavigationService _navigationService = locator<NavigationService>();
@@ -71,36 +75,13 @@ class QuizScreen extends StatelessWidget {
                                       ),
                                     ),
                                     Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          20, 0, 20, 40),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.stretch,
-                                        children: List.generate(
-                                            viewModel
-                                                    .questions[
-                                                        viewModel.currentIndex]
-                                                    .answers
-                                                    ?.length ??
-                                                0,
-                                            (i) => _buildAnswerItem(
-                                                label: i == 0
-                                                    ? 'A'
-                                                    : i == 1
-                                                        ? 'B'
-                                                        : i == 2
-                                                            ? 'C'
-                                                            : 'D',
-                                                answerInfo: viewModel
-                                                    .questions[
-                                                        viewModel.currentIndex]
-                                                    .answers![i],
-                                                onTap: () {
-                                                  viewModel.selectAnswer(i);
-                                                })),
-                                      ),
-                                    ),
-                                    _buildNavigation(viewModel: viewModel),
+                                        padding: const EdgeInsets.fromLTRB(
+                                            20, 0, 20, 40),
+                                        child: _buildAnswerView(
+                                            questionInfo: viewModel.questions[
+                                                viewModel.currentIndex],
+                                            viewModel: viewModel)),
+                                    _buildNavigation(),
                                   ],
                                 ),
                               ),
@@ -119,6 +100,57 @@ class QuizScreen extends StatelessWidget {
                     ),
         ),
       ),
+    );
+  }
+
+  Widget _buildAnswerView(
+      {QuestionInfo? questionInfo, QuizViewModel? viewModel}) {
+    switch (questionInfo!.type) {
+      case QuestionType.subjective:
+        return _buildSubjectiveView(viewModel: viewModel);
+      case QuestionType.radio:
+        return _buildRadioView(
+            questionInfo: questionInfo, viewModel: viewModel);
+      case QuestionType.checkbox:
+        return _buildCheckboxView(
+            questionInfo: questionInfo, viewModel: viewModel);
+      default:
+        return _buildSubjectiveView(viewModel: viewModel);
+    }
+  }
+
+  Widget _buildSubjectiveView({QuizViewModel? viewModel}) {
+    return UnderlineTextField(
+      onChanged: (value) {
+        viewModel!.answerSubjective(value);
+      },
+    );
+  }
+
+  Widget _buildRadioView(
+      {QuestionInfo? questionInfo, QuizViewModel? viewModel}) {
+    return RadioAnswer(
+      answers: questionInfo!.answers,
+      selectedIndex: questionInfo.userAnswers != null
+          ? questionInfo.userAnswers![0]
+          : null,
+      onTap: (value) {
+        viewModel!.answerRadio(value);
+      },
+    );
+  }
+
+  Widget _buildCheckboxView(
+      {QuestionInfo? questionInfo, QuizViewModel? viewModel}) {
+    return CheckboxAnswer(
+      answers: questionInfo!.answers,
+      selectedIndexes: questionInfo.userAnswers != null
+          ? List.generate(questionInfo.userAnswers!.length,
+              (index) => questionInfo.userAnswers![index].toInt())
+          : null,
+      onTap: (value) {
+        viewModel!.answerCheckbox(value);
+      },
     );
   }
 
@@ -149,125 +181,88 @@ class QuizScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAnswerItem(
-      {String? label, Function()? onTap, AnswerInfo? answerInfo}) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 12.0),
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
-            padding: EdgeInsets.all(7),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  width: 0.5,
-                  color: answerInfo?.isSelected ?? false
-                      ? ThemeColor.lightGrey
-                      : ThemeColor.grey,
-                ),
-                color: answerInfo?.isSelected ?? false
-                    ? ThemeColor.lightGrey
-                    : ThemeColor.white),
-            child: Row(
-              children: [
-                Container(
-                  height: 40,
-                  width: 40,
-                  margin: EdgeInsets.only(right: 12),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(
-                        ConstantMeasurement.smallBorderRadius),
-                    color: answerInfo?.isSelected ?? false
-                        ? ThemeColor.blue
-                        : ThemeColor.lightGrey,
-                  ),
-                  child: Center(
-                    child: Text(
-                      label ?? '',
-                      style: UbuntuStyle.button2.copyWith(
-                          color: answerInfo?.isSelected ?? false
-                              ? ThemeColor.white
-                              : ThemeColor.black),
+  Widget _buildNavigation() {
+    return Consumer<QuizViewModel>(
+      builder: (context, viewModel, child) => Row(
+        children: [
+          Expanded(
+            flex: 1,
+            child: viewModel.currentIndex > 0
+                ? InkWell(
+                    onTap: () {
+                      viewModel.currentIndex--;
+                    },
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(
+                              ConstantMeasurement.mediumBorderRadius),
+                        ),
+                        color: ThemeColor.grey.withOpacity(0.3),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(right: 12.0),
+                            child: Icon(Icons.chevron_left,
+                                color: ThemeColor.black),
+                          ),
+                          Text('Previous', style: UbuntuStyle.button2),
+                        ],
+                      ),
                     ),
-                  ),
-                ),
-                Expanded(
-                    child: Text(answerInfo?.text ?? '',
-                        style: UbuntuStyle.button2.copyWith(height: 1.3))),
-              ],
-            )),
+                  )
+                : Container(),
+          ),
+          Expanded(
+            flex: 1,
+            child: _showNextButton(viewModel: viewModel)
+                ? InkWell(
+                    onTap: () {
+                      viewModel.currentIndex++;
+                    },
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          bottomRight: Radius.circular(
+                              ConstantMeasurement.mediumBorderRadius),
+                        ),
+                        color: ThemeColor.blue,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('Next',
+                              style: UbuntuStyle.button2
+                                  .copyWith(color: ThemeColor.white)),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12.0),
+                            child: Icon(Icons.chevron_right,
+                                color: ThemeColor.white),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                : Container(),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildNavigation({QuizViewModel? viewModel}) {
-    return Row(
-      children: [
-        Expanded(
-          flex: 1,
-          child: viewModel!.currentIndex > 0
-              ? InkWell(
-                  onTap: () {
-                    viewModel.currentIndex--;
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(
-                            ConstantMeasurement.mediumBorderRadius),
-                      ),
-                      color: ThemeColor.grey.withOpacity(0.3),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(right: 12.0),
-                          child:
-                              Icon(Icons.chevron_left, color: ThemeColor.black),
-                        ),
-                        Text('Previous', style: UbuntuStyle.button2),
-                      ],
-                    ),
-                  ),
-                )
-              : Container(),
-        ),
-        Expanded(
-          flex: 1,
-          child: viewModel.currentIndex < viewModel.questions.length - 1
-              ? InkWell(
-                  onTap: () {
-                    viewModel.currentIndex++;
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        bottomRight: Radius.circular(
-                            ConstantMeasurement.mediumBorderRadius),
-                      ),
-                      color: ThemeColor.blue,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text('Next',
-                            style: UbuntuStyle.button2
-                                .copyWith(color: ThemeColor.white)),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 12.0),
-                          child: Icon(Icons.chevron_right,
-                              color: ThemeColor.white),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-              : Container(),
-        ),
-      ],
-    );
+  bool _showNextButton({QuizViewModel? viewModel}) {
+    final questionInfo = viewModel!.questions[viewModel.currentIndex];
+    final bool hasNext =
+        viewModel.currentIndex < viewModel.questions.length - 1;
+    if (hasNext && questionInfo.isCompleted) {
+      return true;
+    }
+    return false;
   }
 }

@@ -1,32 +1,22 @@
+import 'package:quiz_app/core/enum/question_type.dart';
 import 'package:quiz_app/core/model/question_info.dart';
 import 'package:quiz_app/core/viewmodel/base_model.dart';
 
 class QuizViewModel extends BaseModel {
   List<QuestionInfo> _questions = [
-    QuestionInfo(text: '1+2=?', answers: [
-      AnswerInfo(text: '1'),
-      AnswerInfo(text: '2'),
-      AnswerInfo(text: '3'),
-      AnswerInfo(text: '4'),
-    ], correctAnswers: [
-      '3'
-    ]),
-    QuestionInfo(text: '1+2=?', answers: [
-      AnswerInfo(text: '1'),
-      AnswerInfo(text: '2'),
-      AnswerInfo(text: '3'),
-      AnswerInfo(text: '4'),
-    ], correctAnswers: [
-      '3'
-    ]),
-    QuestionInfo(text: '1+2=?', answers: [
-      AnswerInfo(text: '1'),
-      AnswerInfo(text: '2'),
-      AnswerInfo(text: '3'),
-      AnswerInfo(text: '4'),
-    ], correctAnswers: [
-      '3'
-    ]),
+    QuestionInfo(
+        text: '1+2=?',
+        type: QuestionType.radio,
+        answers: ['1', '2', '3', '4'],
+        correctAnswers: ['3']),
+    QuestionInfo(
+        text: '1+2=?',
+        type: QuestionType.checkbox,
+        answers: ['1', '2', '3', '4'],
+        correctAnswers: ['3'],
+        minSelect: 3),
+    QuestionInfo(
+        text: '1+2=?', type: QuestionType.subjective, correctAnswers: ['3']),
   ];
   List<QuestionInfo> get questions => _questions;
 
@@ -50,14 +40,32 @@ class QuizViewModel extends BaseModel {
     }
   }
 
-  void selectAnswer(int answerIndex) {
-    _questions[_currentIndex]
-        .answers!
-        .map((value) => value.isSelected = false)
-        .toList();
-    _questions[_currentIndex].answers?[answerIndex].isSelected = true;
-    bool isAllAnswered = true;
-    _showSubmitButton = isAllAnswered;
+  void answerSubjective(String value) {
+    _questions[_currentIndex].isCompleted = true;
+    notifyListeners();
+  }
+
+  void answerRadio(int value) {
+    if (_questions[_currentIndex].userAnswers == null) {
+      _questions[_currentIndex].userAnswers = [];
+      _questions[_currentIndex].userAnswers!.add(value);
+    } else {
+      _questions[_currentIndex].userAnswers![0] = value;
+    }
+    _questions[_currentIndex].isCompleted = true;
+    notifyListeners();
+  }
+
+  void answerCheckbox(List<int> value) {
+    _questions[_currentIndex].userAnswers = [];
+    _questions[_currentIndex].userAnswers!.addAll(value);
+    final questionInfo = _questions[_currentIndex];
+    if (questionInfo.minSelect != null &&
+        value.length >= questionInfo.minSelect!.toInt()) {
+      _questions[_currentIndex].isCompleted = true;
+    } else {
+      _questions[_currentIndex].isCompleted = false;
+    }
     notifyListeners();
   }
 
