@@ -1,6 +1,10 @@
 # quiz_app
 
-A new Flutter project.
+A sample of quiz app.
+
+### Screenshots:
+
+![](https://i.imgur.com/EONs9QM.png) ![](https://i.imgur.com/YpD3odl.png) ![](https://i.imgur.com/wAfP3Uz.png) ![](https://i.imgur.com/ruGgT2Y.png)
 
 ## Getting Started
 
