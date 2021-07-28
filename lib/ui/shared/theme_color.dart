@@ -15,6 +15,7 @@ class ThemeColor {
   static const red = Color(0xffFF4848);
   static const darkRed = Color(0xff900C3F);
   static const purple = Color(0xff3D1DB3);
+  static const babyBlue = Color(0xffbcefff);
 
   static const Map<int, Color> primarySwatch = {
     50: Color(0xff01ADEF),

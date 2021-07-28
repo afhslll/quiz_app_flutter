@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_app/core/constant/measurement_constant.dart';
+import 'package:quiz_app/core/constant/path_constant.dart';
 import 'package:quiz_app/core/router/router.dart';
 import 'package:quiz_app/core/service/locator/locator.dart';
 import 'package:quiz_app/core/service/navigation/navigation_service.dart';
@@ -15,6 +16,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ThemeColor.babyBlue,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -40,20 +42,22 @@ class HomeScreen extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius:
             BorderRadius.circular(ConstantMeasurement.smallBorderRadius),
-        color: ThemeColor.white,
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            'Your High Score',
-            style: UbuntuStyle.h3.copyWith(color: ThemeColor.black),
-            textAlign: TextAlign.center,
+          Image.asset(
+            ConstantAssetsString.astronaut,
+            height: 300,
           ),
           Text(
-            '76',
-            style: UbuntuStyle.h1.copyWith(color: ThemeColor.black),
+            'Explore Your Personality',
+            style: UbuntuStyle.h2.copyWith(color: ThemeColor.black),
             textAlign: TextAlign.center,
+          ),
+          SizedBox(
+            height: 50,
           ),
         ],
       ),
