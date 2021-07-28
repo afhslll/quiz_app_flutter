@@ -6,7 +6,7 @@ class QuizViewModel extends BaseModel {
   List<QuestionInfo> _questions = [
     QuestionInfo(
       text:
-          'What will you do in a party? (eg: Engage strangers, Initiate conversation etc.) Cannot exceed 5 sentences or words.',
+          'What will you do in a party? (eg: Engage strangers, Initiate conversation etc.) Cannot exceed 5 sentences or 50 words.',
       type: QuestionType.subjective,
       maxSentence: 5,
       maxWord: 50,
