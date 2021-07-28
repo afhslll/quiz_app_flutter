@@ -12,10 +12,11 @@ import 'package:quiz_app/ui/shared/style/roboto_style.dart';
 import 'package:quiz_app/ui/shared/style/ubuntu_style.dart';
 import 'package:quiz_app/ui/shared/theme_color.dart';
 import 'package:quiz_app/ui/view/base_view.dart';
+import 'package:quiz_app/ui/widget/action_popup.dart';
+import 'package:quiz_app/ui/widget/box_textfield.dart';
 import 'package:quiz_app/ui/widget/checkbox_answer.dart';
 import 'package:quiz_app/ui/widget/radio_answer.dart';
 import 'package:quiz_app/ui/widget/rounded_button.dart';
-import 'package:quiz_app/ui/widget/underline_textfield.dart';
 
 class QuizScreen extends StatelessWidget {
   final NavigationService _navigationService = locator<NavigationService>();
@@ -92,9 +93,23 @@ class QuizScreen extends StatelessWidget {
                           visible: viewModel.showSubmitButton,
                           child: RoundedButton(
                               isLoading: viewModel.viewState == ViewState.busy,
-                              buttonColor: ThemeColor.blue,
+                              buttonColor: ThemeColor.primary,
                               buttonText: 'Submit',
-                              onTap: () async {}),
+                              onTap: () {
+                                showActionDialog(
+                                    context: context,
+                                    titleText: 'Congratulations!',
+                                    descriptionText:
+                                        'You have completed the test. To view your result, you need to subscribe to a plan.',
+                                    negativeText: 'No, thanks',
+                                    positiveText: 'Subscribe',
+                                    onTapNegative: () {
+                                      _navigationService.pop();
+                                    },
+                                    onTapPositive: () {
+                                      _navigationService.popToTop();
+                                    });
+                              }),
                         ),
                       ],
                     ),
@@ -107,7 +122,8 @@ class QuizScreen extends StatelessWidget {
       {QuestionInfo? questionInfo, QuizViewModel? viewModel}) {
     switch (questionInfo!.type) {
       case QuestionType.subjective:
-        return _buildSubjectiveView(viewModel: viewModel);
+        return _buildSubjectiveView(
+            questionInfo: questionInfo, viewModel: viewModel);
       case QuestionType.radio:
         return _buildRadioView(
             questionInfo: questionInfo, viewModel: viewModel);
@@ -115,12 +131,16 @@ class QuizScreen extends StatelessWidget {
         return _buildCheckboxView(
             questionInfo: questionInfo, viewModel: viewModel);
       default:
-        return _buildSubjectiveView(viewModel: viewModel);
+        return _buildSubjectiveView(
+            questionInfo: questionInfo, viewModel: viewModel);
     }
   }
 
-  Widget _buildSubjectiveView({QuizViewModel? viewModel}) {
-    return UnderlineTextField(
+  Widget _buildSubjectiveView(
+      {QuestionInfo? questionInfo, QuizViewModel? viewModel}) {
+    return BoxTextField(
+      initialValue: questionInfo?.userAnswers?.first ?? '',
+      maxLines: 5,
       onChanged: (value) {
         viewModel!.answerSubjective(value);
       },
@@ -172,7 +192,7 @@ class QuizScreen extends StatelessWidget {
                 value:
                     ((viewModel.currentIndex) + 1) / viewModel.questions.length,
                 backgroundColor: ThemeColor.white,
-                valueColor: AlwaysStoppedAnimation<Color>(ThemeColor.blue),
+                valueColor: AlwaysStoppedAnimation<Color>(ThemeColor.primary),
               ),
             ),
           ),
@@ -200,7 +220,7 @@ class QuizScreen extends StatelessWidget {
                           bottomLeft: Radius.circular(
                               ConstantMeasurement.mediumBorderRadius),
                         ),
-                        color: ThemeColor.grey.withOpacity(0.3),
+                        color: ThemeColor.grey.withOpacity(0.2),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -232,7 +252,7 @@ class QuizScreen extends StatelessWidget {
                           bottomRight: Radius.circular(
                               ConstantMeasurement.mediumBorderRadius),
                         ),
-                        color: ThemeColor.blue,
+                        color: ThemeColor.primary,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,

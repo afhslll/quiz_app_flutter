@@ -71,7 +71,7 @@ class _CheckboxAnswerState extends State<CheckboxAnswer> {
                       borderRadius: BorderRadius.circular(
                           ConstantMeasurement.smallBorderRadius),
                       color: _isAnswerSelected(index)
-                          ? ThemeColor.blue
+                          ? ThemeColor.primary
                           : ThemeColor.lightGrey,
                     ),
                     child: Visibility(

@@ -5,11 +5,11 @@ class QuestionInfo {
   int? point;
   QuestionType? type;
   List<String>? answers;
-  List<String>? correctAnswers;
   List<dynamic>? userAnswers;
   bool? isError;
   int? minSelect;
-  int? maxSelect;
+  int? maxSentence;
+  int? maxWord;
   bool isCompleted;
 
   QuestionInfo({
@@ -17,11 +17,11 @@ class QuestionInfo {
     this.point,
     this.type,
     this.answers,
-    this.correctAnswers,
     this.userAnswers,
     this.isError,
     this.minSelect,
-    this.maxSelect,
+    this.maxSentence,
+    this.maxWord,
     this.isCompleted = false,
   });
 }

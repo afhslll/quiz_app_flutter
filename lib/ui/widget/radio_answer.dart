@@ -63,7 +63,7 @@ class _RadioAnswerState extends State<RadioAnswer> {
                       borderRadius: BorderRadius.circular(
                           ConstantMeasurement.smallBorderRadius),
                       color: index == selectedIndex
-                          ? ThemeColor.blue
+                          ? ThemeColor.primary
                           : ThemeColor.lightGrey,
                     ),
                     child: Center(

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ThemeColor {
   ThemeColor._();
 
-  static const primary = Color(0xff00b4d8);
+  static const primary = Color(0xff0058C9);
   static const accent = Color(0xff0077b6);
   static const black = Color(0xFF000000);
   static const white = Color(0xFFFFFFFF);
@@ -14,7 +14,6 @@ class ThemeColor {
   static const darkGreen = Color(0xff0C9F80);
   static const red = Color(0xffFF4848);
   static const darkRed = Color(0xff900C3F);
-  static const blue = Color(0xff0058C9);
   static const purple = Color(0xff3D1DB3);
 
   static const Map<int, Color> primarySwatch = {
