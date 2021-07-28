@@ -140,7 +140,7 @@ class QuizScreen extends StatelessWidget {
       {QuestionInfo? questionInfo, QuizViewModel? viewModel}) {
     return BoxTextField(
       initialValue: questionInfo?.userAnswers?.first ?? '',
-      maxLines: 5,
+      maxLines: 10,
       onChanged: (value) {
         viewModel!.answerSubjective(value);
       },
