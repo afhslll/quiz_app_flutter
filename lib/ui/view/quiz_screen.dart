@@ -4,6 +4,7 @@ import 'package:quiz_app/core/constant/measurement_constant.dart';
 import 'package:quiz_app/core/enum/question_type.dart';
 import 'package:quiz_app/core/enum/view_state.dart';
 import 'package:quiz_app/core/model/question_info.dart';
+import 'package:quiz_app/core/router/router.dart';
 import 'package:quiz_app/core/service/locator/locator.dart';
 import 'package:quiz_app/core/service/navigation/navigation_service.dart';
 import 'package:quiz_app/core/viewmodel/quiz_viewmodel.dart';
@@ -96,19 +97,8 @@ class QuizScreen extends StatelessWidget {
                               buttonColor: ThemeColor.primary,
                               buttonText: 'Submit',
                               onTap: () {
-                                showActionDialog(
-                                    context: context,
-                                    titleText: 'Congratulations!',
-                                    descriptionText:
-                                        'You have completed the test. To view your result, you need to subscribe to a plan.',
-                                    negativeText: 'No, thanks',
-                                    positiveText: 'Subscribe',
-                                    onTapNegative: () {
-                                      _navigationService.pop();
-                                    },
-                                    onTapPositive: () {
-                                      _navigationService.popToTop();
-                                    });
+                                _navigationService
+                                    .navigateTo(NavigationRouter.resultRoute);
                               }),
                         ),
                       ],
