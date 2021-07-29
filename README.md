@@ -1,10 +1,10 @@
 # quiz_app
 
-A sample of quiz app.
+A sample of quiz app using Flutter.
 
 ### Screenshots:
 
-![](https://i.imgur.com/EONs9QM.png) ![](https://i.imgur.com/6H7tGpj.png) ![](https://i.imgur.com/wAfP3Uz.png) ![](https://i.imgur.com/ruGgT2Y.png)
+![](https://i.imgur.com/EONs9QM.png) ![](https://i.imgur.com/6H7tGpj.png) ![](https://i.imgur.com/wAfP3Uz.png) ![](https://i.imgur.com/ruGgT2Y.png) ![](https://i.imgur.com/iwhMItw.png)
 
 ## Getting Started
 
