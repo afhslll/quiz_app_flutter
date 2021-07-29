@@ -1,30 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_app/core/constant/measurement_constant.dart';
 import 'package:quiz_app/core/constant/path_constant.dart';
+import 'package:quiz_app/core/model/question_info.dart';
+import 'package:quiz_app/core/service/locator/locator.dart';
+import 'package:quiz_app/core/service/navigation/navigation_service.dart';
 import 'package:quiz_app/ui/shared/style/common_style.dart';
 import 'package:quiz_app/ui/shared/style/roboto_style.dart';
 import 'package:quiz_app/ui/shared/style/ubuntu_style.dart';
 import 'package:quiz_app/ui/shared/theme_color.dart';
+import 'package:quiz_app/ui/widget/rounded_button.dart';
 import 'package:quiz_app/ui/widget/wrap_chip.dart';
 
 class ResultScreen extends StatelessWidget {
-  const ResultScreen({Key? key}) : super(key: key);
+  ResultScreen({Key? key}) : super(key: key);
+  final NavigationService _navigationService = locator<NavigationService>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ThemeColor.lightestGrey,
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(ConstantMeasurement.screenPadding),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SafeArea(
-              bottom: false,
-              child: _buildReportView(context: context),
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.all(ConstantMeasurement.screenPadding),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SafeArea(
+                    bottom: false,
+                    child: _buildReportView(context: context),
+                  ),
+                  _buildAnswersView(),
+                ],
+              ),
             ),
-          ],
-        ),
+          ),
+          RoundedButton(
+              buttonColor: ThemeColor.primary,
+              buttonText: 'Back to Home',
+              textColor: ThemeColor.white,
+              onTap: () {
+                _navigationService.popToTop();
+              }),
+        ],
       ),
     );
   }
@@ -105,7 +124,7 @@ class ResultScreen extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 8.0),
                   child: Text(
                     "Explorers are people who like to approach life in their own way, being open to new experiences and ready to try new things. Explorers don't feel constrained by tradition or convention, and they have a quick-thinking and open-minded attitude. People like this are generally positive in outlook, and take a broader view of things rather than focusing on minor details.",
-                    style: RobotoStyle.body2
+                    style: RobotoStyle.body1
                         .copyWith(color: ThemeColor.black, height: 1.5),
                   ),
                 ),
@@ -113,6 +132,109 @@ class ResultScreen extends StatelessWidget {
             ),
           )
         ],
+      ),
+    );
+  }
+
+  Widget _buildAnswersView() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 24.0, bottom: 16),
+          child: Text(
+            'Your answers',
+            style: UbuntuStyle.h3.copyWith(color: ThemeColor.black),
+          ),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            boxShadow: [CommonStyle.boxShadow2],
+            borderRadius:
+                BorderRadius.circular(ConstantMeasurement.mediumBorderRadius),
+            color: ThemeColor.white,
+          ),
+          padding: EdgeInsets.all(ConstantMeasurement.screenPadding),
+          child: ListView.separated(
+              padding: EdgeInsets.zero,
+              primary: false,
+              shrinkWrap: true,
+              itemBuilder: (context, index) => _buildAnswerItem(index: index),
+              separatorBuilder: (context, index) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12.0),
+                    child: Divider(
+                        height: 1,
+                        thickness: 0.5,
+                        color: ThemeColor.grey.withOpacity(0.3)),
+                  ),
+              itemCount: 3),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAnswerItem({int? index, QuestionInfo? questionInfo}) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          height: 40,
+          width: 40,
+          margin: EdgeInsets.only(right: 12),
+          decoration: BoxDecoration(
+            borderRadius:
+                BorderRadius.circular(ConstantMeasurement.smallBorderRadius),
+            color: ThemeColor.primary,
+          ),
+          child: Center(
+            child: Text(
+              (index! + 1).toString(),
+              style: UbuntuStyle.button2.copyWith(color: ThemeColor.white),
+            ),
+          ),
+        ),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'What you do in a party?',
+                style: UbuntuStyle.button1.copyWith(color: ThemeColor.black),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 4.0),
+                child: _buildUserAnswer(
+                    ['Eat definitely', 'Eat definitely', 'Eat definitely']),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildUserAnswer(List<String> answers) {
+    if (answers.length > 1) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: List.generate(
+          answers.length,
+          (index) => Padding(
+            padding: const EdgeInsets.only(top: 4.0),
+            child: Text(
+              '· ${answers[index]}',
+              style: RobotoStyle.body1.copyWith(color: ThemeColor.black),
+            ),
+          ),
+        ),
+      );
+    }
+    return Padding(
+      padding: const EdgeInsets.only(top: 4.0),
+      child: Text(
+        answers.first,
+        style: RobotoStyle.body1.copyWith(color: ThemeColor.black),
       ),
     );
   }

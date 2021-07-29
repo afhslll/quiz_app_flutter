@@ -30,7 +30,7 @@ class RoundedButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      top: useSafeArea,
+      top: false,
       bottom: useSafeArea,
       child: Container(
         width: MediaQuery.of(context).size.width,
