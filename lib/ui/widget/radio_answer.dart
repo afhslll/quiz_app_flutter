@@ -7,7 +7,7 @@ class RadioAnswer extends StatefulWidget {
   final List<String>? answers;
   final Function(int)? onTap;
   final int? selectedIndex;
-  RadioAnswer({Key? key, this.answers, this.onTap, this.selectedIndex})
+  const RadioAnswer({Key? key, this.answers, this.onTap, this.selectedIndex})
       : super(key: key);
 
   @override

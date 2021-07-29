@@ -8,7 +8,7 @@ class CheckboxAnswer extends StatefulWidget {
   final Function(List<int>)? onTap;
   final List<int>? selectedIndexes;
   final int? maxSelect;
-  CheckboxAnswer({
+  const CheckboxAnswer({
     Key? key,
     this.answers,
     this.onTap,
@@ -99,11 +99,11 @@ class _CheckboxAnswerState extends State<CheckboxAnswer> {
   }
 
   void selectAnswer(int index) {
-    if (!_isAnswerSelected(index))
+    if (!_isAnswerSelected(index)) {
       setState(() {
         selectedIndexes.add(index);
       });
-    else {
+    } else {
       setState(() {
         selectedIndexes.removeWhere((si) => si == index);
       });

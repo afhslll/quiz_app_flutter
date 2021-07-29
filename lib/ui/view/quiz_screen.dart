@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:quiz_app/core/argument/result_argument.dart';
 import 'package:quiz_app/core/constant/measurement_constant.dart';
 import 'package:quiz_app/core/enum/question_type.dart';
 import 'package:quiz_app/core/enum/view_state.dart';
@@ -13,7 +14,6 @@ import 'package:quiz_app/ui/shared/style/roboto_style.dart';
 import 'package:quiz_app/ui/shared/style/ubuntu_style.dart';
 import 'package:quiz_app/ui/shared/theme_color.dart';
 import 'package:quiz_app/ui/view/base_view.dart';
-import 'package:quiz_app/ui/widget/action_popup.dart';
 import 'package:quiz_app/ui/widget/box_textfield.dart';
 import 'package:quiz_app/ui/widget/checkbox_answer.dart';
 import 'package:quiz_app/ui/widget/radio_answer.dart';
@@ -97,8 +97,10 @@ class QuizScreen extends StatelessWidget {
                               buttonColor: ThemeColor.primary,
                               buttonText: 'Submit',
                               onTap: () {
-                                _navigationService
-                                    .navigateTo(NavigationRouter.resultRoute);
+                                _navigationService.pushAndRemoveUntil(
+                                    NavigationRouter.resultRoute,
+                                    arguments: ResultArgument(
+                                        questions: viewModel.questions));
                               }),
                         ),
                       ],

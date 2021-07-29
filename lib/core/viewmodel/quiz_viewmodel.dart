@@ -3,7 +3,7 @@ import 'package:quiz_app/core/model/question_info.dart';
 import 'package:quiz_app/core/viewmodel/base_model.dart';
 
 class QuizViewModel extends BaseModel {
-  List<QuestionInfo> _questions = [
+  final List<QuestionInfo> _questions = [
     QuestionInfo(
       text:
           'What will you do in a party? (eg: Engage strangers, Initiate conversation etc.) Cannot exceed 5 sentences or 50 words.',

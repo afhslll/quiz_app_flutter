@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:quiz_app/core/argument/result_argument.dart';
 import 'package:quiz_app/core/constant/measurement_constant.dart';
 import 'package:quiz_app/core/constant/path_constant.dart';
+import 'package:quiz_app/core/enum/question_type.dart';
 import 'package:quiz_app/core/model/question_info.dart';
+import 'package:quiz_app/core/router/router.dart';
 import 'package:quiz_app/core/service/locator/locator.dart';
 import 'package:quiz_app/core/service/navigation/navigation_service.dart';
 import 'package:quiz_app/ui/shared/style/common_style.dart';
@@ -12,7 +15,8 @@ import 'package:quiz_app/ui/widget/rounded_button.dart';
 import 'package:quiz_app/ui/widget/wrap_chip.dart';
 
 class ResultScreen extends StatelessWidget {
-  ResultScreen({Key? key}) : super(key: key);
+  final ResultArgument? arguments;
+  ResultScreen({Key? key, this.arguments}) : super(key: key);
   final NavigationService _navigationService = locator<NavigationService>();
 
   @override
@@ -41,7 +45,8 @@ class ResultScreen extends StatelessWidget {
               buttonText: 'Back to Home',
               textColor: ThemeColor.white,
               onTap: () {
-                _navigationService.popToTop();
+                _navigationService
+                    .pushAndRemoveUntil(NavigationRouter.homeRoute);
               }),
         ],
       ),
@@ -106,7 +111,7 @@ class ResultScreen extends StatelessWidget {
                             height: 4,
                           ),
                           WrapChip(
-                            items: [
+                            items: const [
                               'Innovative',
                               'Open-minded',
                               'Optmistic',
@@ -137,40 +142,44 @@ class ResultScreen extends StatelessWidget {
   }
 
   Widget _buildAnswersView() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 24.0, bottom: 16),
-          child: Text(
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
             'Your answers',
             style: UbuntuStyle.h3.copyWith(color: ThemeColor.black),
           ),
-        ),
-        Container(
-          decoration: BoxDecoration(
-            boxShadow: [CommonStyle.boxShadow2],
-            borderRadius:
-                BorderRadius.circular(ConstantMeasurement.mediumBorderRadius),
-            color: ThemeColor.white,
+          SizedBox(
+            height: 16,
           ),
-          padding: EdgeInsets.all(ConstantMeasurement.screenPadding),
-          child: ListView.separated(
-              padding: EdgeInsets.zero,
-              primary: false,
-              shrinkWrap: true,
-              itemBuilder: (context, index) => _buildAnswerItem(index: index),
-              separatorBuilder: (context, index) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12.0),
-                    child: Divider(
-                        height: 1,
-                        thickness: 0.5,
-                        color: ThemeColor.grey.withOpacity(0.3)),
-                  ),
-              itemCount: 3),
-        ),
-      ],
+          Container(
+            decoration: BoxDecoration(
+              boxShadow: [CommonStyle.boxShadow2],
+              borderRadius:
+                  BorderRadius.circular(ConstantMeasurement.mediumBorderRadius),
+              color: ThemeColor.white,
+            ),
+            padding: EdgeInsets.all(ConstantMeasurement.screenPadding),
+            child: ListView.separated(
+                padding: EdgeInsets.zero,
+                primary: false,
+                shrinkWrap: true,
+                itemBuilder: (context, index) => _buildAnswerItem(
+                    index: index, questionInfo: arguments!.questions![index]),
+                separatorBuilder: (context, index) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                      child: Divider(
+                          height: 1,
+                          thickness: 0.5,
+                          color: ThemeColor.grey.withOpacity(0.3)),
+                    ),
+                itemCount: 3),
+          ),
+        ],
+      ),
     );
   }
 
@@ -179,8 +188,8 @@ class ResultScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          height: 40,
-          width: 40,
+          height: 30,
+          width: 30,
           margin: EdgeInsets.only(right: 12),
           decoration: BoxDecoration(
             borderRadius:
@@ -199,13 +208,13 @@ class ResultScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                'What you do in a party?',
-                style: UbuntuStyle.button1.copyWith(color: ThemeColor.black),
+                questionInfo?.text ?? '',
+                style: UbuntuStyle.button1
+                    .copyWith(color: ThemeColor.black, height: 1.3),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 4.0),
-                child: _buildUserAnswer(
-                    ['Eat definitely', 'Eat definitely', 'Eat definitely']),
+                child: _buildUserAnswer(questionInfo!),
               ),
             ],
           ),
@@ -214,27 +223,36 @@ class ResultScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildUserAnswer(List<String> answers) {
-    if (answers.length > 1) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: List.generate(
-          answers.length,
-          (index) => Padding(
-            padding: const EdgeInsets.only(top: 4.0),
-            child: Text(
-              '· ${answers[index]}',
-              style: RobotoStyle.body1.copyWith(color: ThemeColor.black),
+  Widget _buildUserAnswer(QuestionInfo questionInfo) {
+    if (questionInfo.type == QuestionType.subjective) {
+      return _buildSingleText(questionInfo.userAnswers?.first ?? '');
+    } else {
+      if (questionInfo.userAnswers!.length > 1) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: List.generate(
+            questionInfo.userAnswers!.length,
+            (index) => Padding(
+              padding: const EdgeInsets.only(top: 4.0),
+              child: Text(
+                '· ${questionInfo.answers![questionInfo.userAnswers![index].toInt()]}',
+                style: RobotoStyle.body1.copyWith(color: ThemeColor.primary),
+              ),
             ),
           ),
-        ),
-      );
+        );
+      }
+      return _buildSingleText(
+          questionInfo.answers![questionInfo.userAnswers!.first.toInt()]);
     }
+  }
+
+  Widget _buildSingleText(String text) {
     return Padding(
       padding: const EdgeInsets.only(top: 4.0),
       child: Text(
-        answers.first,
-        style: RobotoStyle.body1.copyWith(color: ThemeColor.black),
+        text,
+        style: RobotoStyle.body1.copyWith(color: ThemeColor.primary),
       ),
     );
   }
